@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { schedule, allForUser, updateStatus } = require('../controllers/consultationController');
-router.post('/schedule', schedule);
-router.get('/', allForUser);
-router.patch('/:id/status', updateStatus);
+const { authenticateToken } = require('../middleware/auth');
+
+router.post('/schedule', authenticateToken, schedule);
+router.get('/', authenticateToken, allForUser);
+router.patch('/:id/status', authenticateToken, updateStatus);
+
 module.exports = router;

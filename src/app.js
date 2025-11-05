@@ -13,8 +13,14 @@ app.get("/health",(req,res)=>{
 app.use('/api/auth', authRoutes);
 app.use('/api/consultations', consultationRoutes);
 
-db.sequelize.sync({alter:true}).then(() => {
-  app.listen(3000, () => {
-    console.log('Server running on port 3000');
+// Export the app for testing
+module.exports = app;
+
+// Only start the server if this file is run directly (not imported)
+if (require.main === module) {
+  db.sequelize.sync({alter:true}).then(() => {
+    app.listen(3000, () => {
+      console.log('Server running on port 3000');
+    });
   });
-});
+}
