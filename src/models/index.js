@@ -1,9 +1,17 @@
 const { Sequelize } = require('sequelize');
 const config = require('../config').development;
-
-const sequelize = new Sequelize(config.database, config.username, config.password, {
-  host: config.host,
-  dialect: config.dialect,
+require('dotenv').config();
+const { DATABASE_URL } = process.env;
+const sequelize = new Sequelize(DATABASE_URL, {
+  dialect: 'postgres',
+  protocol: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false, // Supabase requires SSL
+    },
+  },
+  logging: false, // optional, turns off SQL logs
 });
 
 const db = {};
