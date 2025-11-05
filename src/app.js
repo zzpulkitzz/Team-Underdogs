@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const db = require('./models');
 const authRoutes = require('./routes/auth');
+const consultationRoutes = require('./routes/consultations');
+
 console.log("d,",authRoutes)
 const app = express();
 app.use(express.json());
@@ -9,8 +11,9 @@ app.get("/health",(req,res)=>{
     res.send("ok")
 })
 app.use('/api/auth', authRoutes);
+app.use('/api/consultations', consultationRoutes);
 
-db.sequelize.sync().then(() => {
+db.sequelize.sync({alter:true}).then(() => {
   app.listen(3000, () => {
     console.log('Server running on port 3000');
   });
