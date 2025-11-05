@@ -1,7 +1,8 @@
 const { Sequelize } = require('sequelize');
 const config = require('../config').development;
-
-const sequelize = new Sequelize("postgresql://postgres.cfcskwbthvaucoqvasog:cHRBzk4isT0kcOQN@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres", {
+const { DATABASE_URL } = process.env;
+require('dotenv').config();
+const sequelize = new Sequelize(DATABASE_URL, {
   dialect: 'postgres',
   protocol: 'postgres',
   dialectOptions: {
