@@ -7,8 +7,9 @@ const http = require('http');
 const socketio = require('socket.io');
 const { Chat } = require('./models');
 const chatRoutes = require('./routes/chat');
+const dailyRoutes = require('./routes/daily');
+const transcriptionRoutes = require('./routes/transcription')
 
-console.log("d,",authRoutes)
 const app = express();
 app.use(express.json());
 app.get("/health",(req,res)=>{
@@ -64,5 +65,10 @@ if (require.main === module) {
     server.listen(3000, () => {
       console.log('Server running on port 3000');
     });
+app.use('/api/daily', dailyRoutes);
+app.use('/api/transcription', transcriptionRoutes);
+db.sequelize.sync({alter:true}).then(() => {
+  app.listen(3000, () => {
+    console.log('Server running on port 3000');
   });
 }
