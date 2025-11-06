@@ -8,9 +8,15 @@ exports.transcribeAudio = async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
   try {
     const form = new FormData();
-    form.append('file', fs.createReadStream(req.file.path));
-    form.append('model', 'whisper-1');
-
+    console.log(req.file);
+    const audioStream = fs.createReadStream(req.file.path);
+audioStream.on('error', (err) => console.error('File stream error:', err));
+form.append('file', audioStream, {
+  filename: req.file.originalname,
+  contentType: req.file.mimetype
+});
+    form.append('model', 'gpt-4o-transcribe');
+    console.log(OPENAI_API_KEY)
     const transcriptionRes = await axios.post('https://api.openai.com/v1/audio/transcriptions', form, {
       headers: {
         ...form.getHeaders(),

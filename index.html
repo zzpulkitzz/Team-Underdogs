@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Daily Video + Whisper Transcription Test</title>
+  <style>
+    #subtitles {
+      position: absolute;
+      bottom: 30px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      color: #fff;
+      font-size: 1.5em;
+      background: rgba(0,0,0,0.5);
+      pointer-events: none;
+    }
+    #container { position: relative; display: inline-block; }
+    button { margin: 8px; }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <iframe
+      id="call-frame"
+      allow="camera; microphone; fullscreen; speaker; display-capture"
+      src="https://teamunderdog.daily.co/cdfstaVnLdR3c0zZmKuT"
+      width="800"
+      height="600"
+      style="border: 0;">
+    </iframe>
+    <div id="subtitles"></div>
+  </div>
+  <br />
+  <button id="startTranscription">Start Transcription</button>
+  <button id="stopTranscription">Stop Transcription</button>
+
+  <script>
+    let mediaRecorder;
+    let audioChunks = [];
+    let keepRecording = false;
+    let stream;
+
+    async function startTranscription() {
+     
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      keepRecording = true;
+
+      mediaRecorder.ondataavailable = event => {
+        console.log("started")
+        audioChunks.push(event.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        audioChunks = [];
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'input.webm');
+
+        // Optionally add consultationId if needed
+
+        try {
+          const res = await fetch('http://localhost:3000/api/transcription', {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+
+          if (data.text) showSubtitle(data.text);
+          console.log(data)
+        } catch (e) {
+          console.error('Transcription error:', e);
+        }
+
+        if (keepRecording) {
+          mediaRecorder.start();
+          setTimeout(() => mediaRecorder.stop(), 3500);
+        } else if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+        }
+      };
+
+      mediaRecorder.start();
+      setTimeout(() => mediaRecorder.stop(), 3500);
+    }
+
+    function stopTranscription() {
+        
+      keepRecording = false;
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        console.log("stopped")
+        mediaRecorder.stop();
+      }
+      // Optionally clear subtitles when done
+      // document.getElementById('subtitles').textContent = '';
+    }
+
+    function showSubtitle(text) {
+      document.getElementById('subtitles').textContent = text;
+    }
+
+    document.getElementById('startTranscription').onclick = startTranscription;
+    document.getElementById('stopTranscription').onclick = stopTranscription;
+  </script>
+</body>
+</html>

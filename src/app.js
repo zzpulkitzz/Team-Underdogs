@@ -9,8 +9,23 @@ const { Chat } = require('./models');
 const chatRoutes = require('./routes/chat');
 const dailyRoutes = require('./routes/daily');
 const transcriptionRoutes = require('./routes/transcription')
-
+const cors = require('cors');
 const app = express();
+
+app.use(
+  cors({
+    origin: function(origin, callback) {
+      // Allow null origin for local files, and also allow localhost testing
+      if (!origin || origin === 'null' || origin.startsWith('http://localhost')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true
+  })
+);
+
 app.use(express.json());
 app.get("/health",(req,res)=>{
     res.send("ok")
