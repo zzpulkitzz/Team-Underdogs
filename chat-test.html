@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Telehealth Chat Test</title>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+    #messages { border:1px solid #aaa; height:200px; overflow-y:scroll; margin-bottom:10px; }
+    #messages div { padding:4px; }
+    #input, #senderId, #consultationId { margin:4px 0; }
+  </style>
+</head>
+<body>
+  <h2>Telehealth Consultation Chat Test</h2>
+  <label>
+    Consultation ID: <input type="text" id="consultationId" value="1"/>
+  </label>
+  <label>
+    Sender ID: <input type="text" id="senderId" value="1"/>
+  </label>
+  <button onclick="joinRoom()">Join Consultation</button>
+  <div id="status"></div>
+  <div id="messages"></div>
+  <input type="text" id="input" placeholder="Type a message"/>
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    const SERVER_URL = "http://localhost:3000";
+    let socket;
+
+    function joinRoom() {
+      const consultationId = document.getElementById('consultationId').value;
+      if (!consultationId) return alert('Enter Consultation ID');
+      socket = io(SERVER_URL);
+
+      socket.on('connect', () => {
+        document.getElementById('status').innerText = 'Connected to server: ' + socket.id;
+        socket.emit('joinConsultation', { consultationId });
+      });
+
+      socket.on('disconnect', () => {
+        document.getElementById('status').innerText = 'Disconnected!';
+      });
+
+      socket.on('joinedConsultation', (data) => {
+        document.getElementById('status').innerText = `Connected & joined consultation ${data.consultationId}`;
+      });
+
+      socket.on('chatMessage', (msg) => {
+        const el = document.createElement('div');
+        el.innerText = `[${new Date(msg.sentAt).toLocaleTimeString()}] Sender ${msg.senderId}: ${msg.message}`;
+        document.getElementById('messages').appendChild(el);
+        document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+      });
+
+      socket.on('error', (error) => {
+        document.getElementById('status').innerText = 'Error: ' + error.message;
+      });
+
+      socket.on('connect_error', (error) => {
+        document.getElementById('status').innerText = 'Connection failed: ' + error.message;
+      });
+
+      document.getElementById('messages').innerHTML = '';
+      document.getElementById('status').innerText = 'Connecting...';
+    }
+
+    function sendMessage() {
+      const consultationId = document.getElementById('consultationId').value;
+      const senderId = document.getElementById('senderId').value;
+      const message = document.getElementById('input').value;
+      if (socket && consultationId && senderId && message) {
+        socket.emit('chatMessage', { consultationId, senderId, message });
+        document.getElementById('input').value = '';
+      }
+    }
+  </script>
+</body>
+</html>
