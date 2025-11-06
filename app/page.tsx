@@ -3,30 +3,13 @@ import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Play, Calendar, Shield, User, Clock } from "lucide-react"
+import { Navbar } from "@/components/navbar"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="text-2xl font-bold text-blue-600">Veersa</div>
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-gray-900 hover:text-gray-600">
-              Features
-            </a>
-            <a href="#specialties" className="text-gray-900 hover:text-gray-600">
-              Specialities
-            </a>
-            <a href="#faq" className="text-gray-900 hover:text-gray-600">
-              FAQ
-            </a>
-          </div>
-          <Link href="/auth/role">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6">Sign Up</Button>
-          </Link>
-        </div>
-      </nav>
+      <Navbar variant="light" />
 
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-6 py-20">
