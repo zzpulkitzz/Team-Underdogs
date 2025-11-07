@@ -13,6 +13,7 @@ import { Stethoscope, CalendarDays, UserRound, ChevronRight } from "lucide-react
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Navbar } from "@/components/navbar";
 
 // ---------- Schema ----------
 const intakeSchema = z.object({
@@ -42,6 +43,8 @@ const intakeSchema = z.object({
 
 type IntakeFormValues = z.infer<typeof intakeSchema>;
 const DRAFT_KEY = "veersa:intake-draft";
+
+
 
 // ---------- Page ----------
 export default function IntakePage() {

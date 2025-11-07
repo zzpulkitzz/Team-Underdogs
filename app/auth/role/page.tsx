@@ -1,21 +1,43 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { Card } from "@/components/ui/card"
-import { User, Stethoscope } from "lucide-react"
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Card } from "@/components/ui/card";
+import { User, Stethoscope } from "lucide-react";
 
 export default function RoleSelectPage() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [incomingNext, setIncomingNext] = useState<string | null>(null);
+
+  // Robustly read ?next= from the URL on the client
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const n = sp.get("next");
+      setIncomingNext(n);
+    } catch {
+      setIncomingNext(null);
+    }
+  }, []);
 
   const handleRoleSelect = (role: "patient" | "doctor") => {
-    setIsLoading(true)
-    // Store role in localStorage as fallback
-    localStorage.setItem("userRole", role)
-    // Navigate to auth page with role query param
-    router.push(`/auth?role=${role}`)
-  }
+    setIsLoading(true);
+
+    // Where to go after signup?
+    // Change doctor default to "/doctor/appointments" if that's your page
+    const next =
+      role === "doctor" ? "/doctor/dashboard" : incomingNext || "/intake";
+
+    try {
+      localStorage.setItem("userRole", role);
+      localStorage.setItem("redirectAfterSignup", next);
+    } catch { }
+
+    router.push(`/auth?role=${role}&next=${encodeURIComponent(next)}`);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center px-4">
@@ -24,7 +46,13 @@ export default function RoleSelectPage() {
         <div className="text-center mb-16">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Stethoscope className="w-8 h-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Veersa Telehealth</h1>
+            <Link
+              href="/"
+              className="text-3xl font-bold text-gray-900 hover:text-blue-700 transition-colors"
+              aria-label="Go to home"
+            >
+              Veersa Telehealth
+            </Link>
           </div>
           <h2 className="text-5xl font-bold text-gray-900 mb-4">Who are you?</h2>
           <p className="text-lg text-gray-600">Choose your account type to get started</p>
@@ -77,11 +105,11 @@ export default function RoleSelectPage() {
         {/* Footer */}
         <p className="text-center text-gray-600 text-sm">
           Already have an account?{" "}
-          <a href="/auth" className="text-blue-600 font-semibold hover:text-blue-700">
+          <Link href="/auth" className="text-blue-600 font-semibold hover:text-blue-700">
             Sign in
-          </a>
+          </Link>
         </p>
       </div>
     </div>
-  )
+  );
 }

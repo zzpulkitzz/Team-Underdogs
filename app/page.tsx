@@ -1,11 +1,11 @@
 import Link from "next/link"
-import Image from "next/image"
-import { Play, Calendar, Shield, User, Clock } from "lucide-react"
+import { Calendar, Shield, User, Clock } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Navbar } from "@/components/navbar"
+import { ImagesSlider } from "@/components/image-slider"
 
 export default function Home() {
   return (
@@ -39,33 +39,33 @@ export default function Home() {
                   Start Patient Intake
                 </Button>
               </Link>
-              <Link href="/book" className="inline-flex">
-                <Button variant="ghost" className="  border-gray-400 bg-transparent px-8 py-6 text-blue-700 hover:text-blue-800">
-                  Book now
-                </Button>
-              </Link>
             </div>
           </div>
 
-          {/* Hero Image */}
+          {/* Hero Images Slider (replaces video) */}
           <div className="relative">
-            <div className="relative aspect-video overflow-hidden rounded-3xl bg-gradient-to-br from-gray-400 to-gray-600 shadow-lg">
-              <Image
-                src="/doctor-consultation-telehealth-video-call.jpg"
-                alt="Doctor consultation over secure video"
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <button
-                  aria-label="Watch demo"
-                  className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-blue-600 transition hover:bg-blue-700"
-                >
-                  <Play className="ml-1 h-6 w-6 text-white" />
-                </button>
-              </div>
+            <div className="relative aspect-video overflow-hidden rounded-3xl shadow-lg">
+              <ImagesSlider
+                images={[
+                  "/hero/image1.jpg",
+                  "/hero/image2.jpg",
+                  "/hero/image3.jpg",
+                ]}
+                autoplay
+                direction="up"
+                overlay
+                overlayClassName="bg-black/35"
+                className="h-full w-full"
+              >
+                {/* Optional overlay content */}
+                <div className="absolute inset-0 z-50 flex items-end p-4 md:p-6">
+                  <div className="rounded-xl bg-white/80 px-4 py-3 backdrop-blur-md shadow">
+                    <p className="text-sm text-gray-700">
+                      Secure HD calls • Licensed doctors • 24/7 availability
+                    </p>
+                  </div>
+                </div>
+              </ImagesSlider>
             </div>
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function Home() {
       <section id="specialties" className="mx-auto max-w-7xl px-6 py-20">
         <h2 className="mb-12 text-4xl font-bold text-black">Specialties</h2>
         <div className="grid gap-6 md:grid-cols-3">
-          {["Dermatology", "Pediatrics", "Cardiology","Psychiatry","Neurology","Orthopedics"].map((s, i) => (
+          {["Dermatology", "Pediatrics", "Cardiology", "Psychiatry", "Neurology", "Orthopedics"].map((s, i) => (
             <Card
               key={i}
               className="cursor-pointer border border-gray-200 bg-white p-6 transition hover:shadow-md"
@@ -174,7 +174,7 @@ export default function Home() {
           </div>
           <div>
             <Accordion type="single" collapsible>
-              <AccordionItem value="item-2">
+              <AccordionItem value="item-3">
                 <AccordionTrigger className="text-lg font-semibold text-black hover:text-gray-600">
                   What about privacy of Patient Data?
                 </AccordionTrigger>
@@ -186,7 +186,7 @@ export default function Home() {
           </div>
           <div>
             <Accordion type="single" collapsible>
-              <AccordionItem value="item-2">
+              <AccordionItem value="item-4">
                 <AccordionTrigger className="text-lg font-semibold text-black hover:text-gray-600">
                   What are payment options?
                 </AccordionTrigger>
@@ -196,7 +196,6 @@ export default function Home() {
               </AccordionItem>
             </Accordion>
           </div>
-
         </div>
       </section>
 
